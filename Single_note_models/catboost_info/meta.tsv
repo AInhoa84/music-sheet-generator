@@ -1,6 +1,3 @@
-name	experiment
-iterCount	200
-learnErrorLog	learn_error.tsv
-testErrorLog	test_error.tsv
-timeLeft	time_left.tsv
-loss	RMSE	min
+version https://git-lfs.github.com/spec/v1
+oid sha256:630dfaf580b110990faa48ab1db622554157be82016ef1d46550e8280c366914
+size 132
