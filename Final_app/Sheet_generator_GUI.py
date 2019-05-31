@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
 import librosa
-from tqdm import tqdm
+from tqdm import tqdm_notebook as tqdm
 import pickle
 import IPython.display as ipd
 from IPython.core.display import display, HTML, Javascript
@@ -18,8 +18,8 @@ from keras.optimizers import Adam
 from keras.regularizers import l1, l2
 from livelossplot import PlotLossesKeras
 
-from Utilities import *
-from Segmenter import *
+from Utilities_GUI import *
+from Segmenter_GUI import *
 
 class sheet_generator:
     def __init__(self, note_model, string_model, segmentation_model=Segmenter(), bpm=None):
@@ -60,6 +60,7 @@ class sheet_generator:
         results = []
         
         for i in tqdm(range(len(onsets) - 1), leave=False):
+            sg.OneLineProgressMeter('Sheet generator', i+1, len(onsets) - 1, 'key', 'Calculating...', orientation="h")
             note = waveform(wave.y[onsets[i]:onsets[i+1]])
             
             if len(note.y) >= 500:
@@ -140,9 +141,9 @@ class sheet_generator:
                     tab += "-" * len(str(note[3]))
                 tab += "-"
             tab += "\n"
-        print(tab)
+        return tab
         
-    def create_guitarpro_tab(self, sheet):
+    def create_guitarpro_tab(self, sheet, file_name):
         template = guitarpro.parse('blank.gp5')
         measure_list = template.tracks[0].measures
         del template.tracks[0].measures[0].voices[0].beats[0]
@@ -178,7 +179,7 @@ class sheet_generator:
                     new_beat.notes.append(new_note)
                     template.tracks[0].measures[current_measure].voices[0].beats.append(new_beat)
                     
-                    remaining_beats = (self.bpm/60) * (sheet[i,2].astype("float")) - fitting_beats
+                    remaining_beats = (self.bpm/60) * (float(sheet[i,2])) - fitting_beats
                     current_measure += 1
                     new_measure = guitarpro.Measure(template.tracks[0], header=template.tracks[0].measures[0].header)
                     duration = guitarpro.Duration(value= int(round(4/remaining_beats)))
@@ -192,7 +193,7 @@ class sheet_generator:
                     
             print(i,duration.value, (self.bpm/60) * (float(sheet[i,2])))
         
-        guitarpro.write(template, 'final.gp5')
+        guitarpro.write(template, file_name)
     
     def display_music_sheet(self, sheet, play_audio=False):
         stream1 = music21.stream.Stream()

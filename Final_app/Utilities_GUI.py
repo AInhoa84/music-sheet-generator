@@ -1,7 +1,22 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# # Utilities
+
+# ## Waveform class
+
+# In[2]:
+
+
 import librosa
 import numpy as np
 import pandas as pd
+import PySimpleGUI as sg
 from tqdm import tqdm_notebook as tqdm
+
+
+# In[31]:
+
 
 class waveform:
     def __init__(self, wave, rs=8000):
@@ -73,6 +88,7 @@ class waveform:
     def apply_window(self, size, disp, function, convert=False, temp=True, norm=False, *args):
         results = []
         for i in tqdm(range(0, len(self.y)-size, disp), leave = False):
+            sg.OneLineProgressMeter('Apply window', i+1, len(self.y) - size, 'key','Calculating...', orientation="h")
             window = self.y[i:i+size]
             if temp and convert:
                 window = temp_data(window, size, norm)
@@ -82,7 +98,13 @@ class waveform:
         return results
 
 
-# Data utilities
+# ## Data utilities
+
+# Functions to divide dataset intro train, validation and test
+
+# In[1]:
+
+
 def create_xy(df, target_column):
     """
     Separates features and target
@@ -123,6 +145,10 @@ def split_data(df, target_column):
 
 
 # Convert audio files from a directory into data
+
+# In[ ]:
+
+
 from tqdm import tqdm_notebook as tqdm
 
 def dir_to_data(directory, function, *args):
@@ -149,6 +175,10 @@ def dir_to_data(directory, function, *args):
 
 
 # ## Included in waveform class
+
+# In[1]:
+
+
 def envelope(y, n):
     env_pos = []
     env_neg = []
@@ -225,6 +255,10 @@ def spectral_data(y, samples, norm):
         data = pd.DataFrame({"x{}".format(j): [w[freqs >= 0][j]] for j in range(samples)})
     return data
 
+
+# In[1]:
+
+
 def frontiers(y, env, k, use_desc=False):
     previous = np.array(env)[:-1]
     current = np.array(env)[1:]
@@ -240,6 +274,10 @@ def frontiers(y, env, k, use_desc=False):
     
     return front
 
+
+# In[4]:
+
+
 import json
 from keras.models import model_from_json
 
@@ -250,6 +288,10 @@ def load_NN(name, verbose=True):
     if verbose:
         model.summary()
     return model
+
+
+# In[4]:
+
 
 def round_to_base(x, base):
     x = np.array(x)

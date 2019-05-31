@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
 import librosa
-from tqdm import tqdm
+from tqdm import tqdm_notebook as tqdm
 import pickle
+import IPython.display as ipd
+import PySimpleGUI as sg
 
 import keras
 from keras.layers import Input, Dense, Dropout
@@ -13,7 +15,7 @@ from keras.optimizers import Adam
 from keras.regularizers import l1, l2
 from livelossplot import PlotLossesKeras
 
-from Utilities import *
+from Utilities_GUI import *
 
 class Segmenter:
     def __init__(self):
@@ -91,6 +93,7 @@ class Segmenter:
         
         # Check whether there are multiple notes between two candidates
         for i in tqdm(range(len(filtered_onsets) - 1), leave = False):
+            sg.OneLineProgressMeter('Segmenter', i+1, len(filtered_onsets) - 1, 'key', 'Calculating...', orientation="h")
             chunk = wave.y[filtered_onsets[i]:filtered_onsets[i+1]]
             chunk = waveform(chunk[size:len(chunk)-size])
             predictions = chunk.apply_window(size=size, disp=disp, convert=True, temp=True, 
