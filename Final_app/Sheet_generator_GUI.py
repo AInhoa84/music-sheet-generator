@@ -7,7 +7,6 @@ from tqdm import tqdm_notebook as tqdm
 import pickle
 import IPython.display as ipd
 from IPython.core.display import display, HTML, Javascript
-import music21
 import json, random
 import guitarpro
 
@@ -144,7 +143,7 @@ class sheet_generator:
         return tab
         
     def create_guitarpro_tab(self, sheet, file_name):
-        template = guitarpro.parse('blank.gp5')
+        template = guitarpro.parse('../templates/blank.gp5')
         measure_list = template.tracks[0].measures
         del template.tracks[0].measures[0].voices[0].beats[0]
         bar_start = 0
@@ -194,74 +193,3 @@ class sheet_generator:
             print(i,duration.value, (self.bpm/60) * (float(sheet[i,2])))
         
         guitarpro.write(template, file_name)
-    
-    def display_music_sheet(self, sheet, play_audio=False):
-        stream1 = music21.stream.Stream()
-        instrument = music21.instrument.ElectricGuitar()
-        instrument.partName = "Guitar"
-        stream1.append(instrument)
-        
-        for i in range(len(sheet)):
-            current_note = music21.note.Note(sheet[i,0])
-            current_note.quarterLength = (self.bpm/60) * (float(sheet[i,2]))
-            stream1.append(current_note)
-        
-        if play_audio:
-            stream1.show("midi")
-        
-        fp = stream1.write('midi', fp='test.mid')
-            
-        self.showScore(stream1)
-        
-    def showScore(self, score):
-        xml = open(score.write('musicxml')).read()
-        self.showMusicXML(xml)
-        
-    def showMusicXML(self, xml):
-        DIV_ID = "OSMD-div-"+str(random.randint(0,1000000))
-        print("DIV_ID", DIV_ID)
-        display(HTML('<div id="'+DIV_ID+'">loading OpenSheetMusicDisplay</div>'))
-
-        print('xml length:', len(xml))
-
-        script = """
-        console.log("loadOSMD()");
-        function loadOSMD() { 
-            return new Promise(function(resolve, reject){
-
-                if (window.opensheetmusicdisplay) {
-                    console.log("already loaded")
-                    return resolve(window.opensheetmusicdisplay)
-                }
-                console.log("loading osmd for the first time")
-                // OSMD script has a 'define' call which conflicts with requirejs
-                var _define = window.define // save the define object 
-                window.define = undefined // now the loaded script will ignore requirejs
-                var s = document.createElement( 'script' );
-                s.setAttribute( 'src', "https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@0.3.1/build/opensheetmusicdisplay.min.js" );
-                //s.setAttribute( 'src', "/custom/opensheetmusicdisplay.js" );
-                s.onload=function(){
-                    window.define = _define
-                    console.log("loaded OSMD for the first time",opensheetmusicdisplay)
-                    resolve(opensheetmusicdisplay);
-                };
-                document.body.appendChild( s ); // browser will try to load the new script tag
-            }) 
-        }
-        loadOSMD().then((OSMD)=>{
-            console.log("loaded OSMD",OSMD)
-            var div_id = "{{DIV_ID}}";
-                console.log(div_id)
-            window.openSheetMusicDisplay = new OSMD.OpenSheetMusicDisplay(div_id);
-            openSheetMusicDisplay
-                .load({{data}})
-                .then(
-                  function() {
-                    console.log("rendering data")
-                    openSheetMusicDisplay.render();
-                  }
-                );
-        })
-        """.replace('{{DIV_ID}}',DIV_ID).replace('{{data}}',json.dumps(xml))
-        display(Javascript(script))
-        return DIV_ID
