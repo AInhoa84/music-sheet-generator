@@ -1,27 +1,19 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # Utilities
 
 # ## Waveform class
-
-# In[2]:
-
-
 import librosa
 import numpy as np
 import pandas as pd
 import PySimpleGUI as sg
-from tqdm import tqdm_notebook as tqdm
-
-
-# In[31]:
-
 
 class waveform:
     def __init__(self, wave, rs=8000):
         """
         Loads an audio file into a waveform object
+        
+        Args:
+            wave (array/str): Name of the audio file or array containing audio info
+            rs (int): Frequency the audio will be resampled to
         
         """
         # Check whether wave is a file name or an array
@@ -36,6 +28,13 @@ class waveform:
     def envelope(self, n):
         """
         Calculates the positive and negative envelopes of a wave
+        
+        Args:
+            n (int): Number of samples per bin
+            
+        Returns:
+            Array: Positive envelope
+            Array: Negative envelope
         
         """
         env_pos = []
@@ -57,6 +56,7 @@ class waveform:
 
         Returns:
             DataFrame: Extracted data
+            
         """
         if norm:
             data = pd.DataFrame({'x{}'.format(j): [self.y[j]/np.max(self.y)] for j in range(samples)})
@@ -74,6 +74,7 @@ class waveform:
 
         Returns:
             DataFrame: Extracted data
+            
         """
         if norm:
             w = abs(np.fft.fft(self.y, n=samples*2))
@@ -86,8 +87,23 @@ class waveform:
         return data
     
     def apply_window(self, size, disp, function, convert=False, temp=True, norm=False, *args):
+        """
+        Apply a function to several windows of a waveform object
+        
+        Args:
+            size (int): Size of the window in samples
+            disp (int): Number of samples each window will be displaced from the previous one
+            function (object): Function that will be applied to each window
+            convert (bool): Set to True to convert each window into a DataFrame
+            temp (bool): Set to True to extract temporal data, otherwise extract spectral data (requires convert=True)
+            norm (bool): Set to True to normalize data (requires convert=True)
+            
+        Returns:
+            array: Result of applying the function to each window
+            
+        """
         results = []
-        for i in tqdm(range(0, len(self.y)-size, disp), leave = False):
+        for i in range(0, len(self.y)-size, disp):
             sg.OneLineProgressMeter('Apply window', i+1, len(self.y) - size, 'key','Calculating...', orientation="h")
             window = self.y[i:i+size]
             if temp and convert:
@@ -101,9 +117,6 @@ class waveform:
 # ## Data utilities
 
 # Functions to divide dataset intro train, validation and test
-
-# In[1]:
-
 
 def create_xy(df, target_column):
     """
@@ -135,6 +148,7 @@ def split_data(df, target_column):
         DataFrame: Validation target dataframe
         DataFrame: Test feature dataframe
         DataFrame: Test target dataframe
+        
     """
     X_train, y_train = create_xy(df.sample(round(0.8*df.shape[0])), target_column)
     df = df.drop(X_train.index)
@@ -145,11 +159,6 @@ def split_data(df, target_column):
 
 
 # Convert audio files from a directory into data
-
-# In[ ]:
-
-
-from tqdm import tqdm_notebook as tqdm
 
 def dir_to_data(directory, function, *args):
     """
@@ -163,10 +172,8 @@ def dir_to_data(directory, function, *args):
         DataFrame: Extracted data
     """
     data = pd.DataFrame()
-    pbar = tqdm(os.listdir(directory))
     
-    for file in pbar:
-        pbar.set_description("Processing %s" % file)
+    for file in os.listdir(directory):
         df = function(directory + file, *args)
         data = data.append(df)
         
@@ -175,11 +182,20 @@ def dir_to_data(directory, function, *args):
 
 
 # ## Included in waveform class
-
-# In[1]:
-
+# Still needs to be kept here
 
 def envelope(y, n):
+    """
+    Calculates the positive and negative envelopes of a wave
+
+    Args:
+        n (int): Number of samples per bin
+
+    Returns:
+        Array: Positive envelope
+        Array: Negative envelope
+
+    """
     env_pos = []
     env_neg = []
 
@@ -190,8 +206,23 @@ def envelope(y, n):
     return env_pos, env_neg
 
 def apply_window(y, size, disp, function, convert=False, temp=True, norm=False, *args):
+    """
+    Apply a function to several windows of a wave array
+
+    Args:
+        size (int): Size of the window in samples
+        disp (int): Number of samples each window will be displaced from the previous one
+        function (object): Function that will be applied to each window
+        convert (bool): Set to True to convert each window into a DataFrame
+        temp (bool): Set to True to extract temporal data, otherwise extract spectral data (requires convert=True)
+        norm (bool): Set to True to normalize data (requires convert=True)
+
+    Returns:
+        array: Result of applying the function to each window
+
+    """
     results = []
-    for i in tqdm(range(0, len(y)-size, disp), leave = False):
+    for i in range(0, len(y)-size, disp):
         window = y[i:i+size]
         if temp and convert:
             window = temp_data(window, size, norm)
@@ -209,6 +240,7 @@ def load_file(file, rs):
         
     Returns:
         Array: Waveform
+        
     """
     y, sr = librosa.load(file, mono=False)
     y = librosa.core.to_mono(y)
@@ -226,6 +258,7 @@ def temp_data(y, samples, norm):
         
     Returns:
         DataFrame: Extracted data
+        
     """
     if norm:
         data = pd.DataFrame({'x{}'.format(j): [y[j]/np.max(y)] for j in range(samples)})
@@ -244,6 +277,7 @@ def spectral_data(y, samples, norm):
         
     Returns:
         DataFrame: Extracted data
+        
     """
     if norm:
         w = abs(np.fft.fft(y, n=samples*2))
@@ -255,11 +289,20 @@ def spectral_data(y, samples, norm):
         data = pd.DataFrame({"x{}".format(j): [w[freqs >= 0][j]] for j in range(samples)})
     return data
 
-
-# In[1]:
-
-
 def frontiers(y, env, k, use_desc=False):
+    """
+    Find frontiers between notes using info from the envelope
+    
+    Args:
+        y (array): Wave
+        env (array): Envelope
+        k (int): Minimum current bin amplitude to previous bin amplitude to be considered a frontier
+        use_desc (bool): Set to True to count amplitude descents as frontiers
+        
+    Returns:
+        Array: Frontier locations
+        
+    """
     previous = np.array(env)[:-1]
     current = np.array(env)[1:]
     if use_desc:
@@ -274,14 +317,21 @@ def frontiers(y, env, k, use_desc=False):
     
     return front
 
-
-# In[4]:
-
-
 import json
 from keras.models import model_from_json
 
 def load_NN(name, verbose=True):
+    """
+    Loads a neural network model
+    
+    Args:
+        name (str): Name of the model
+        verbose (bool): Set to True to include a model summary
+        
+    Returns:
+        Object: Model
+        
+    """
     with open(name + "_NN_architecture.json", 'r') as json_file:
         model = model_from_json(json_file.read())
     model.load_weights(name + "_NN_weights.h5")
@@ -289,11 +339,18 @@ def load_NN(name, verbose=True):
         model.summary()
     return model
 
-
-# In[4]:
-
-
 def round_to_base(x, base):
+    """
+    Round number to a custom base
+    
+    Args:
+        x (int): Number to round
+        base (int): base to round to
+        
+    Returns:
+        Int: Rounded number
+        
+    """
     x = np.array(x)
     return base * np.round(x/base)
 

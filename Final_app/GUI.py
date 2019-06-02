@@ -32,7 +32,7 @@ while True:
         
     # Run sheet generator
     SG = sheet_generator("../Single_note_models/Guitar/Guitar", "../Single_note_models/Guitar/Guitar_norm_string", bpm=120)
-    results = SG.note_extraction(waveform(file_name), False)
+    results = SG.note_extraction(waveform(file_name))
     sheet = SG.raw_sheet(results, values["Apply heuristics"])
     
     if values["Display tab"]:

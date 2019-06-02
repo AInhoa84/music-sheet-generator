@@ -1,11 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd
 import librosa
-from tqdm import tqdm_notebook as tqdm
 import pickle
-import IPython.display as ipd
 import PySimpleGUI as sg
 
 import keras
@@ -13,7 +10,6 @@ from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l1, l2
-from livelossplot import PlotLossesKeras
 
 from Utilities_GUI import *
 
@@ -43,7 +39,15 @@ class Segmenter:
         """
         Calculate note onset predictions using a NN model
         
+        Args:
+            wave (waveform): Waveform object to segment
+            model_name (str): Name of the neural network model
+            
+        Returns:
+            Array: Predicted onsets
+        
         """
+        # Check which model is being asked for and set apply_window parameters accordingly
         if "narrow" in model_name:
             size = 300
         elif "broad" in model_name:
@@ -65,6 +69,15 @@ class Segmenter:
         """
         Find onset candidates using the envelope of the waveform
         
+        Args:
+            wave (array): Wave
+            env (array): Envelope
+            k (int): Minimum current bin amplitude to previous bin amplitude to be considered a frontier
+            use_desc (bool): Set to True to count amplitude descents as frontiers
+        
+        Returns:
+            Array: Frontier locations
+
         """
         previous = np.array(env)[:-1]
         current = np.array(env)[1:]
@@ -79,6 +92,17 @@ class Segmenter:
         """
         Find onset candidates using the envelope of the waveform, note checking and filtering out unusually short notes
         
+        Args:
+            wave (waveform): Wave
+            bins (int): Number of samples per bin
+            k (int): Minimum current bin amplitude to previous bin amplitude to be considered a frontier
+            size (int): Size of the windows for note checking
+            disp (int): Number of samples that the current window will be displaced from the previous one (note checking)
+            use_desc (bool): Set to True to count descending amplitude values as onsets
+        
+        Returns:
+            Array: Onsets
+            
         """        
         # Find candidates
         env_pos, env_neg = wave.envelope(bins)
@@ -92,7 +116,7 @@ class Segmenter:
                 filtered_onsets.append(o)
         
         # Check whether there are multiple notes between two candidates
-        for i in tqdm(range(len(filtered_onsets) - 1), leave = False):
+        for i in range(len(filtered_onsets) - 1):
             sg.OneLineProgressMeter('Segmenter', i+1, len(filtered_onsets) - 1, 'key', 'Calculating...', orientation="h")
             chunk = wave.y[filtered_onsets[i]:filtered_onsets[i+1]]
             chunk = waveform(chunk[size:len(chunk)-size])
@@ -120,6 +144,15 @@ class Segmenter:
         """
         Run onset prediction with a more sensitive envelope
         
+        Args:
+            chunk (array): Window from a longer waveform
+            center (int): Center of the chunk
+            std (float): Standard deviation of note durations in the original waveform
+            final_onsets (array): Onsets found by the onsets_preds_env method
+        
+        Returns:
+            Float: New onset
+            
         """
         new_candidates = np.array(self.onset_preds_env(waveform(chunk), bins=20, use_desc=True))
         return np.mean(new_candidates[round_to_base(new_candidates, std) == center])
@@ -128,6 +161,13 @@ class Segmenter:
         """
         Perform a final check on onset predictions to find missed notes
         
+        Args:
+            wave (waveform): Audio wave
+            final_onsets (array): Onsets found by the onsets_preds_env method
+            
+        Returns:
+            Array: Updated onsets
+            
         """
         # Round onset locations to the standard deviation of note durations and find the most common value
         std = int(np.std(np.array(final_onsets[1:]) - np.array(final_onsets[:-1])))
@@ -152,11 +192,27 @@ class Segmenter:
         """
         Find the minimum distance to the values of an array
         
+        Args:
+            x (float): Number to be compared
+            arr (array): Array to be compared
+        
+        Returns:
+            Float: Minimum distance from x to the array values
+            
         """
         arr = np.array(arr)
         return np.min(np.abs(arr - x))
     
-    def predict(self, wave, show_plots=False):
+    def predict(self, wave):
+        """
+        Return onset predictions of an audio wave using NN and envelope info
+        
+        Args:
+            wave (waveform): Input audio wave
+            
+        Returns:
+            List: Onset predictions
+        """
         # Calculate NN-based predictions
         self.preds_narrow_temp = self.onset_preds_NN(wave, "narrow_temp_model")
         self.preds_broad_temp = self.onset_preds_NN(wave, "broad_temp_model")
@@ -205,39 +261,6 @@ class Segmenter:
             else:
                 coinc.append(all_onsets[i])
         final_onsets.append(all_onsets[-1])
-        
-        if show_plots:
-            plt.figure(figsize=(18,6))
-            plt.plot(wave.y, alpha=.7)
-            for o in final_onsets:
-                plt.axvline(x=o, color='r', linestyle='--')
-            plt.title("Segmented wave")
-
-            plt.figure(figsize=(18,6))
-            plt.plot(wave.y*3, alpha=.7)
-            plt.plot(self.preds_narrow_temp[:,0]+150, self.preds_narrow_temp[:,1], 'r', linewidth=2)
-            plt.plot(self.preds_broad_temp[:,0]+300, self.preds_broad_temp[:,1]*(-1), 'purple', linewidth=2)
-            plt.axhline(y=0.75, color="b", linestyle='--')
-            plt.axhline(y=-0.75, color="b", linestyle='--')
-            plt.axhline(y=0.85, color="b", linestyle='--')
-            plt.axhline(y=-0.85, color="b", linestyle='--')
-            plt.title("Temporal NN predictions")
-
-            plt.figure(figsize=(18,6))
-            plt.plot(wave.y*3, alpha=.7)
-            plt.plot(self.preds_narrow_spectral[:,0]+150, self.preds_narrow_spectral[:,1], 'r', linewidth=2)
-            plt.plot(self.preds_broad_spectral[:,0]+300, self.preds_broad_spectral[:,1]*(-1), 'purple', linewidth=2)
-            plt.axhline(y=0.75, color="b", linestyle='--')
-            plt.axhline(y=-0.75, color="b", linestyle='--')
-            plt.axhline(y=0.85, color="b", linestyle='--')
-            plt.axhline(y=-0.85, color="b", linestyle='--')
-            plt.title("Spectral NN predictions")
-
-            plt.figure(figsize=(18,6))
-            plt.plot(wave.y)
-            for i in self.preds_env:
-                plt.axvline(x=i, color="g")
-            plt.title("Envelope predictions")
             
         return final_onsets
 
