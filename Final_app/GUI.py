@@ -25,8 +25,8 @@ while True:
     bpm = ""
     
     # Ask for bpm if option is checked
-    if values["BPM"]:
-        while bpm is "":
+    if values["BPM"] and file_name != "":
+        while bpm == "":
             bpm = sg.PopupGetText("Enter the file's BPM", default_text="120")
     
     # Ask for save location and name of the gp5 file
@@ -44,7 +44,7 @@ while True:
     sheet = SG.raw_sheet(results, values["Apply heuristics"])
     
     if values["Display tab"]:
-        sg.Popup("Guitar tab", SG.display_tablature(sheet), font=("BatangChe", 18))
+        sg.Popup("Guitar tab", SG.display_tablature(sheet), font=("Consolas", 18))
         
     if values["Create gp5 file"]:
         SG.create_guitarpro_tab(sheet, gp5_name + ".gp5")
