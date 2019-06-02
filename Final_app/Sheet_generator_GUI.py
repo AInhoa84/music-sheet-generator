@@ -219,6 +219,7 @@ class sheet_generator:
         """
         # Create a blank gp5 structure from a template
         template = guitarpro.parse('../templates/blank.gp5')
+        template.tempo = self.bpm
         measure_list = template.tracks[0].measures
         del template.tracks[0].measures[0].voices[0].beats[0]
         bar_start = 0

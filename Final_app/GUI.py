@@ -6,6 +6,7 @@ import PySimpleGUI as sg
 layout = [
     [sg.Text('Input file', size=(15, 1), auto_size_text=False, justification='right'),      
     sg.InputText(), sg.FileBrowse(file_types=(("All files", "*.*"),("Audio files", ".mp3")))],
+    [sg.Checkbox('Set bpm (will be estimated otherwise)', default=True, key="BPM")],
     [sg.Checkbox('Display tab', default=True, key="Display tab")],
     [sg.Checkbox("Apply heuristics", default=True, key="Apply heuristics")],
     [sg.Checkbox("Create gp5 file", default=True, key="Create gp5 file")],
@@ -14,13 +15,19 @@ layout = [
 ]
 
 # Main window
-window = sg.Window('Guitar Tab Generator', layout)  
+window = sg.Window('Guitar Tab Generator', layout)
 
 # Main loop
 while True:
     button, values = window.Read()
     
     file_name = values["Browse"]
+    bpm = ""
+    
+    # Ask for bpm if option is checked
+    if values["BPM"]:
+        while bpm is "":
+            bpm = sg.PopupGetText("Enter the file's BPM", default_text="120")
     
     # Ask for save location and name of the gp5 file
     if values["Create gp5 file"] and file_name != "":
@@ -31,7 +38,8 @@ while True:
             gp5_name = "untitled"
         
     # Run sheet generator
-    SG = sheet_generator("../Single_note_models/Guitar/Guitar", "../Single_note_models/Guitar/Guitar_norm_string", bpm=120)
+    SG = sheet_generator("../Single_note_models/Guitar/Guitar", 
+                         "../Single_note_models/Guitar/Guitar_norm_string", bpm=int(bpm))
     results = SG.note_extraction(waveform(file_name))
     sheet = SG.raw_sheet(results, values["Apply heuristics"])
     
