@@ -26,7 +26,7 @@ while True:
     
     # Ask for bpm if option is checked
     if values["BPM"] and file_name != "":
-        while bpm == "":
+        while bpm == "" or bpm is None:
             bpm = sg.PopupGetText("Enter the file's BPM", default_text="120")
     
     # Ask for save location and name of the gp5 file
