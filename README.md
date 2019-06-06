@@ -16,7 +16,7 @@ There are commercial applications that extract musical notes from audio, but the
  3. Choose your preferences: <br>
     3.1. Select *Manually input file bpm* if you know, at least approximately, the tempo of your file. Please note that in some cases, such as when there is a tremolo riff in your file, it is more desirable that you do this, as opposed to letting the program make an estimation. <br>
 	 
-	 3.2. Select *Display tab* if you wish to see a preview of the guitar tab. This feature is designed with short tabs in mind.<br>
+	 3.2. Select *Display tab* if you wish to see a preview of the guitar tab. Keep in mind that this feature is not designed to display long tabs.<br>
 	 
 	 3.3. Select *Apply heuristics* to let the program apply post-prediction heuristics to correct mistakes in the tab (RECOMMENDED).<br>
 	 
@@ -28,7 +28,7 @@ There are commercial applications that extract musical notes from audio, but the
 7. Once the calculations are done, you should be able to see the results.
 
 ## How does it work?
-The project relies on Machine Learning techniques to solve this transcription problem, namely Neural Networks and Gradient Boosting. The processing of the file or pipeline follows several stages:
+The project relies on Supervised Machine Learning techniques to solve this transcription problem, namely Neural Networks and Gradient Boosting. The processing of the file or pipeline follows several stages:
 
 ### 1. Segmentation
 The first step involves dividing the input file, which is essentially a long waveform, into individual notes. The output of this step is an indication of where (or rather, when) each individual note starts.
@@ -38,11 +38,7 @@ Even if by visualizing the waveform detecting note onsets seems intuitive, autom
 #### 1.1. Amplitude rule model
 This model was build based on the idea that a note change implies a sudden variation of the amplitude of the wave's [envelope](https://en.wikipedia.org/wiki/Envelope_%28waves%29). This is not necessarily true, but it works for most cases. The model works as follows:
 
-a. Calculates the envelope.
-b. Finds candidates where there is a drastic change in the envelope's amplitude.
-c. Removes unusually short candidates using statistical information.
-d. Checks whether it has missed a note using the note identification Neural Network. Basically, it checks whether between two onset candidates there is a change in the predicted note (in case there is, an onset was missed where the prediction changes).
-e. Double check the middle point between two candidates with a more accurate envelope.
+a. Calculates the envelope. <br>b. Finds candidates where there is a drastic change in the envelope's amplitude. <br>c. Removes unusually short candidates using statistical information. <br>d. Checks whether it has missed a note using the note identification Neural Network. Basically, it checks whether between two onset candidates there is a change in the predicted note (in case there is, an onset was missed where the prediction changes).<br>e. Double check the middle point between two candidates with a more accurate envelope.<br>
 
 #### 1.2. Onset detection Neural Networks
 These Neural Networks were trained to, given a short piece of a waveform, detect whether there is a note onset or not. They are run throughout the whole wave. These are either based on temporal information from the wave or spectral (from the frequency domain) and are either narrow (shorter piece) or broad (longer piece):
