@@ -14,6 +14,7 @@ There are commercial applications that extract musical notes from audio, but the
  1. Run "GUI.exe" located in "Final_app/dist/GUI".
  2. Click on *Browse* and locate your audio file.
  3. Choose your preferences:
+ 
 	 a. Select *Manually input file bpm* if you know, at least approximately, the tempo of your file. Please note that in some cases, such as when there is a tremolo riff in your file, it is more desirable that you do this, as opposed to letting the program make an estimation.
 	 
 	 b. Select *Display tab* if you wish to see a preview of the guitar tab. This feature is designed with short tabs in mind.
@@ -21,6 +22,7 @@ There are commercial applications that extract musical notes from audio, but the
 	 c. Select *Apply heuristics* to let the program apply post-prediction heuristics to correct mistakes in the tab (RECOMMENDED).
 	 
 	 d. Select *Create gp5 file* if you want a Guitar Pro file with your tab to be generated.
+	 
 4. Click on *Run tab generator*.
 5. If you selected *Manually input file bpm*, a window will appear asking you to write the file's bpm.
 6. If you selected *Create gp5 file*, a window will appear asking where to save the generated Guitar Pro file.
