@@ -28,7 +28,7 @@ There are commercial applications that extract musical notes from audio, but the
 7. Once the calculations are done, you should be able to see the results.
 
 ## How does it work?
-The project relies on Supervised Machine Learning techniques to solve this transcription problem, namely Neural Networks and Gradient Boosting. The processing of the file or pipeline follows several stages:
+The project relies on [Supervised Machine Learning](https://en.wikipedia.org/wiki/Supervised_learning) techniques to solve this transcription problem, namely [Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network) and [Gradient Boosting](https://en.wikipedia.org/wiki/Gradient_boosting). The processing of the file, or *pipeline*, follows several stages:
 
 ### 1. Segmentation
 The first step involves dividing the input file, which is essentially a long waveform, into individual notes. The output of this step is an indication of where (or rather, when) each individual note starts.
@@ -38,10 +38,10 @@ Even if by visualizing the waveform detecting note onsets seems intuitive, autom
 #### 1.1. Amplitude rule model
 This model was build based on the idea that a note change implies a sudden variation of the amplitude of the wave's [envelope](https://en.wikipedia.org/wiki/Envelope_%28waves%29). This is not necessarily true, but it works for most cases. The model works as follows:
 
-a. Calculates the envelope. <br>b. Finds candidates where there is a drastic change in the envelope's amplitude. <br>c. Removes unusually short candidates using statistical information. <br>d. Checks whether it has missed a note using the note identification Neural Network. Basically, it checks whether between two onset candidates there is a change in the predicted note (in case there is, an onset was missed where the prediction changes).<br>e. Double check the middle point between two candidates with a more accurate envelope.<br>
+1.1.1. Calculates the envelope. <br>1.1.2. Finds candidates where there is a drastic change in the envelope's amplitude. <br>1.1.3. Removes unusually short candidates using statistical information. <br>1.1.4. Checks whether it has missed a note using the note identification Neural Network. Basically, it checks whether between two onset candidates there is a change in the predicted note (in case there is, an onset was missed where the prediction changes).<br>1.1.5. Double check the middle point between two candidates with a more accurate envelope.<br>
 
 #### 1.2. Onset detection Neural Networks
-These Neural Networks were trained to, given a short piece of a waveform, detect whether there is a note onset or not. They are run throughout the whole wave. These are either based on temporal information from the wave or spectral (from the frequency domain) and are either narrow (shorter piece) or broad (longer piece):
+These Neural Networks were trained to, given a short piece of a waveform, detect whether there is a note onset or not. They are run throughout the whole wave. These are either based on temporal information from the wave or spectral (from the [frequency domain](https://en.wikipedia.org/wiki/Frequency_domain)) and are either narrow (shorter piece) or broad (longer piece):
 
  - Temporal narrow window NN
  - Temporal broad window NN
@@ -52,7 +52,7 @@ These Neural Networks were trained to, given a short piece of a waveform, detect
 The next step is to, given an individual note, identify its [chroma](https://en.wikipedia.org/wiki/Chroma_feature) and [octave height](https://en.wikipedia.org/wiki/Octave), individuating it as a specific frequency. This is done with a Neural Network that is capable of classifying a segment of audio into 61 different notes, ranging from E1 to E6, which is the note range of an 8-string guitar (tuned to E B E A D G B E).
 
 ### 3. String identification
-Similarly, for each individual note the string it is played on is estimated with a Neural Network which classifies audio input into 8 different classes corresponding to 8 different strings. There is no direct correspondence between note and string because the same note can be played in different strings.
+Similarly, for each individual note, the string it is played on is estimated with a Neural Network which classifies audio input into 8 different classes corresponding to 8 different strings. There is no direct correspondence between note and string because the same note can be played in different strings.
 
 ### 4. Fret assignment and calculation of duration
 Note duration is simply calculated as the difference between its onset and the next one. As for the [fret](https://en.wikipedia.org/wiki/Fret), there is a one-to-one correspondence between a string-note combination and the fret that corresponds to it. 
@@ -86,7 +86,7 @@ All of the data was extracted from DI recordings of an Ibanez RG8 guitar played 
 
 The audio files were downsampled to 8 kHz in order to reduce the number of features that would be used when training a model. Precision is lost as a result, but this should not be a problem for the purpose of this data, since information about frequency, harmonics, etc is not lost.
 
-Data extraction from audio was carried out using [librosa](https://github.com/librosa/librosa) and could be either be from the temporal domain or the frequency domain, depending on the goal of the model that would be trained with it.
+Data extraction from audio was carried out using [librosa](https://github.com/librosa/librosa) and could be either from the temporal domain or the frequency domain, depending on the goal of the model that would be trained with it.
 
 ## Project structure
 The project is structured into several folders:
@@ -97,16 +97,16 @@ The project is structured into several folders:
  - **GUI**: Here is all of the code used to generate the graphical user interface of the app. It includes a working IPython Notebook version of the app ("GUI.ipynb").
  - **Pipeline**: Folder containing the project's pipeline, "Sheet_generator.ipynb", from segmentation to final formatting (see the *How does it work?* section). It also includes the "Sheet_generator_example.ipynb" notebook that can be used to test the pipeline.
  - **Samples**: Here all raw audio files (both for piano and guitar) are kept. There are two types of guitar audio files: those located in "Guitar/Ind_notes" are made up of consecutive individual notes played on the same string, while those located in "Guitar/Riffs" are actual guitar [riffs](https://en.wikipedia.org/wiki/Ostinato#Riff), emulating natural guitar playing.
- - **Segmentation**: Here both the code used to train the models used for note segmentation and the models themselves are present.
+ - **Segmentation**: Here both the code used to train the note segmentation models and the models themselves are present.
  - **Single_note_models**: In this folder the models used for note and string identification, along with the code used to train them, can be found.
  - **Tempo**: Here are all models tested for tempo prediction.
- - **Utilities**: This folder contains the "Utilities.ipynb" notebook, which is made up of useful functions and calsses that are used throughout the project. Inside "Dataset_generators" is all of the code used to generate the all of the data (see "Data" folder) from the audio samples (see "Samples" folder).
+ - **Utilities**: This folder contains the "Utilities.ipynb" notebook, which is made up of useful functions and classes that are used throughout the project. Inside "Dataset_generators" is all of the code used to generate the data (see "Data" folder) from the audio samples (see "Samples" folder).
 
 ## Model breakdown
 ### Neural Networks
 All of the Neural Networks used in this project were composed of a similar architecture: two hidden layers and an output layer, all of which were densely-connected. The first layer usually had a linear [activation function](https://en.wikipedia.org/wiki/Activation_function), the second a [Rectified Linear Unit (ReLU)](https://en.wikipedia.org/wiki/Rectifier_%28neural_networks%29) and the last a [SoftMax](https://en.wikipedia.org/wiki/Softmax_function) (used in classification). The number of inputs for each layer was always lower than that of the preceding layer.
 
-In order to avoid [overfitting](https://en.wikipedia.org/wiki/Overfitting), a combination of [dropout](https://en.wikipedia.org/wiki/Dropout_%28neural_networks%29) layers, along with [L1](https://en.wikipedia.org/wiki/Lasso_%28statistics%29) and [L2](https://en.wikipedia.org/wiki/Tikhonov_regularization) regularization was used, depending on the case. The optimizer chosen to train the networks was the [Adam optimizer](https://towardsdatascience.com/adam-latest-trends-in-deep-learning-optimization-6be9a291375c). The Neural Networks API used is [Keras](https://keras.io/).
+In order to avoid [overfitting](https://en.wikipedia.org/wiki/Overfitting), a combination of [dropout](https://en.wikipedia.org/wiki/Dropout_%28neural_networks%29) layers, along with [L1](https://en.wikipedia.org/wiki/Lasso_%28statistics%29) and [L2](https://en.wikipedia.org/wiki/Tikhonov_regularization) regularization was used, depending on the case. The optimizer chosen to train the networks was the [Adam optimizer](https://towardsdatascience.com/adam-latest-trends-in-deep-learning-optimization-6be9a291375c). The Neural Networks API used was [Keras](https://keras.io/).
 
 ### Gradient Boosting
 Gradient Boosting was used exclusively to predict the tempo of a musical audio file, since for other purposes it performed worse than Neural Networks. Tempo prediction models were trained using [XGBoost](https://github.com/dmlc/xgboost), [CatBoost](https://github.com/catboost/catboost) and [LightGBM](https://github.com/microsoft/LightGBM) due to setbacks when trying to implement them into the final application. Finally, the tempo estimation now runs with the LightGBM model, which uses [decision trees](https://en.wikipedia.org/wiki/Decision_tree_learning) with a maximum depth of 10.
