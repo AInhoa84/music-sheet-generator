@@ -13,7 +13,7 @@ There are commercial applications that extract musical notes from audio, but the
 
  1. Run "GUI.exe" located in "Final_app/dist/GUI".
  2. Click on *Browse* and locate your audio file.
- 3. Choose your preferences:
+ 3. Choose your preferences: <br>
     3.1. Select *Manually input file bpm* if you know, at least approximately, the tempo of your file. Please note that in some cases, such as when there is a tremolo riff in your file, it is more desirable that you do this, as opposed to letting the program make an estimation. <br>
 	 
 	 3.2. Select *Display tab* if you wish to see a preview of the guitar tab. This feature is designed with short tabs in mind.<br>
