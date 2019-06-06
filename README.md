@@ -2,7 +2,7 @@
 ## What is Guitar Tablature Generator?
 Guitar Tablature Generator is a project that aims to create an application capable of generating a [tablature](https://en.wikipedia.org/wiki/Tablature), including notes played, their value, the [fret](https://en.wikipedia.org/wiki/Fret) and string they are played on and the tempo of the music piece, from a raw guitar audio file. The resulting tab can be loaded into popular sheet music editor software [Guitar Pro](https://www.guitar-pro.com/en/index.php).
 
-At present it is especially useful for guitar composers who want to easily create a tab of what they have just played, saving them the time of having to write the tab manually.
+At present it is especially useful for guitar composers who want to easily create a tab of what they have just played, saving them the time of writing it manually.
 
 ## Why is it relevant?
 Automatic music transcription is an ongoing field of research. Despite the ability and experience required for a person to translate a music piece, human performance in this field is still above that of machines.
@@ -14,14 +14,13 @@ There are commercial applications that extract musical notes from audio, but the
  1. Run "GUI.exe" located in "Final_app/dist/GUI".
  2. Click on *Browse* and locate your audio file.
  3. Choose your preferences:
- 
-	 a. Select *Manually input file bpm* if you know, at least approximately, the tempo of your file. Please note that in some cases, such as when there is a tremolo riff in your file, it is more desirable that you do this, as opposed to letting the program make an estimation.
+    3.1. Select *Manually input file bpm* if you know, at least approximately, the tempo of your file. Please note that in some cases, such as when there is a tremolo riff in your file, it is more desirable that you do this, as opposed to letting the program make an estimation. <br>
 	 
-	 b. Select *Display tab* if you wish to see a preview of the guitar tab. This feature is designed with short tabs in mind.
+	 3.2. Select *Display tab* if you wish to see a preview of the guitar tab. This feature is designed with short tabs in mind.<br>
 	 
-	 c. Select *Apply heuristics* to let the program apply post-prediction heuristics to correct mistakes in the tab (RECOMMENDED).
+	 3.3. Select *Apply heuristics* to let the program apply post-prediction heuristics to correct mistakes in the tab (RECOMMENDED).<br>
 	 
-	 d. Select *Create gp5 file* if you want a Guitar Pro file with your tab to be generated.
+	 3.4. Select *Create gp5 file* if you want a Guitar Pro file with your tab to be generated.<br>
 	 
 4. Click on *Run tab generator*.
 5. If you selected *Manually input file bpm*, a window will appear asking you to write the file's bpm.
