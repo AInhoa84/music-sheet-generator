@@ -34,8 +34,7 @@ The project relies on [Supervised Machine Learning](https://en.wikipedia.org/wik
 The first step involves dividing the input file, which is essentially a long waveform, into individual notes. The output of this step is an indication of where (or rather, when) each individual note starts.
 
 Even if by visualizing the waveform detecting note onsets seems intuitive, automatic detection is prone to false positives, given the low occurrence of note onsets compared to non-onsets. This is why an ensemble of several prediction models (1 rule-based custom model and 4 Neural Networks) was necessary.
-<br>
-![Segmentation](segmented_wave.jpg)
+
 #### 1.1. Amplitude rule model
 This model was build based on the idea that a note change implies a sudden variation of the amplitude of the wave's [envelope](https://en.wikipedia.org/wiki/Envelope_%28waves%29). This is not necessarily true, but it works for most cases. The model works as follows:
 
@@ -49,6 +48,10 @@ These Neural Networks were trained to, given a short piece of a waveform, detect
  - Spectral narrow window NN
  - Spectral broad window NN
 
+<br>
+![Segmentation](segmented_wave.jpg)
+*Segmentation*
+
 ### 2. Note identification
 The next step is to, given an individual note, identify its [chroma](https://en.wikipedia.org/wiki/Chroma_feature) and [octave height](https://en.wikipedia.org/wiki/Octave), individuating it as a specific frequency. This is done with a Neural Network that is capable of classifying a segment of audio into 61 different notes, ranging from E1 to E6, which is the note range of an 8-string guitar (tuned to E B E A D G B E).
 
@@ -56,6 +59,7 @@ The next step is to, given an individual note, identify its [chroma](https://en.
 Similarly, for each individual note, the string it is played on is estimated with a Neural Network which classifies audio input into 8 different classes corresponding to 8 different strings. There is no direct correspondence between note and string because the same note can be played in different strings.
 <br>
 ![Note and string](note_string_id.jpg)
+*Note and string identification*
 ### 4. Fret assignment and calculation of duration
 Note duration is simply calculated as the difference between its onset and the next one. As for the [fret](https://en.wikipedia.org/wiki/Fret), there is a one-to-one correspondence between a string-note combination and the fret that corresponds to it. 
 
@@ -67,14 +71,19 @@ However, some string-note combinations are impossible, so this also serves as an
 The process is run iteratively until a possible note-string combination is found.
 <br>
 ![Fret and duration](fret_duration.jpg)
+*Fret assignment and calculation of duration*
 
 ### 5. Tempo estimation
 In case the number of beats per minute (bpm) of the musical piece is not provided by the user, [tempo](https://en.wikipedia.org/wiki/Tempo) is estimated by the program. This is done running a Gradient Boosting model over 8 consecutive notes at a time and then averaging the predictions. If the piece contains less than 8 notes, however, it is estimated by assigning the median of all durations as the duration of an [eighth note](https://en.wikipedia.org/wiki/Eighth_note) and calculating the tempo that corresponds to this.
 <br>
 ![Tempo](tempo.jpg)
+*Tempo estimation*
 
 ### 6. Homogenization
 In this step notes are rounded to the closest duration that corresponds to a certain value (quarter note, eighth note, etc). By now the result is a raw music sheet.
+<br>
+![Homogenization](hom.jpg)
+*Homogenization*
 
 ### 7. Error correction heuristics
  At this point, the user can decide whether to apply post-prediction heuristics or not. These detect unusual patterns in the music sheet and interpret them as mistakes made in earlier stages, thus replacing them with more likely patterns. Currently there are two available heuristics:
