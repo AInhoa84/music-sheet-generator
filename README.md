@@ -1,7 +1,15 @@
 ﻿# Guitar Tablature Generator
 ## Contents
-[What is Guitar Tablature Generator?](#what-is-guitar-tablature-generator?)
-[Performance](#performance)
+[What is Guitar Tablature Generator?](#what-is-guitar-tablature-generator?) <br>
+[Why is it relevant?](#why-is-it-relevant?) <br>
+[How do I install the project?](#how-do-i-install-the-project) <br>
+[How do I use the application?](#how-do-i-use-the-application) <br>
+[How does it work?](#how-does-it-work?) <br>
+[Data](#data) <br>
+[Project structure](#project-structure) <br>
+[Model breakdown](#model-breakdown) <br>
+[Performance](#performance) <br>
+[Limitations](#limitations)
 
 ## What is Guitar Tablature Generator?
 Guitar Tablature Generator is a project that aims to create an application capable of generating a [tablature](https://en.wikipedia.org/wiki/Tablature), including notes played, their value, the [fret](https://en.wikipedia.org/wiki/Fret) and string they are played on and the tempo of the music piece, from a raw guitar audio file. The resulting tab can be loaded into popular sheet music editor software [Guitar Pro](https://www.guitar-pro.com/en/index.php).
