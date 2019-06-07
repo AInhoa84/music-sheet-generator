@@ -174,4 +174,4 @@ At present, there are several limitations to the application:
  - Musical **silences** are **not** built-in, so they might not appear in the final tab.
  - Even if recordings have been done with an 8-string guitar, for now only the 6 standard strings will appear in the output.
  - All music will be presented in **4/4** time signature.
- - **Slides, vibratos, hammer-ons**, etc are **not** recommended to be included in the audio files.
+ - It is **not** recommended to include **Slides, vibratos, hammer-ons**, etc.
