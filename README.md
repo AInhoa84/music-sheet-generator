@@ -48,7 +48,7 @@ These Neural Networks were trained to, given a short piece of a waveform, detect
  - Spectral narrow window NN
  - Spectral broad window NN
 <br>
-![Segmentation](https://raw.githubusercontent.com/Aturt2/music-sheet-generator/segmented_wave.jpg)
+![Segmentation](segmented_wave.jpg)
 *Segmentation*
 
 ### 2. Note identification
