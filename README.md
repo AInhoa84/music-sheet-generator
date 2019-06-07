@@ -163,7 +163,7 @@ Accuracy:
  
 <br>
 
-Mean Absolute Error of Tempo detection: **8.61**
+Mean Absolute Error of the tempo detection model: **8.61**
 
 ## Limitations
 At present, there are several limitations to the application:
