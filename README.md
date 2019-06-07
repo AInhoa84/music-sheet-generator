@@ -47,7 +47,7 @@ These Neural Networks were trained to, given a short piece of a waveform, detect
  - Temporal broad window NN
  - Spectral narrow window NN
  - Spectral broad window NN
-<br>
+
 ![Segmentation](segmented_wave.jpg)
 *Segmentation*
 
