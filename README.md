@@ -34,6 +34,7 @@ The project relies on [Supervised Machine Learning](https://en.wikipedia.org/wik
 The first step involves dividing the input file, which is essentially a long waveform, into individual notes. The output of this step is an indication of where (or rather, when) each individual note starts.
 
 Even if by visualizing the waveform detecting note onsets seems intuitive, automatic detection is prone to false positives, given the low occurrence of note onsets compared to non-onsets. This is why an ensemble of several prediction models (1 rule-based custom model and 4 Neural Networks) was necessary.
+![A](Imgs/segmented_wave.jpg)
 
 #### 1.1. Amplitude rule model
 This model was build based on the idea that a note change implies a sudden variation of the amplitude of the wave's [envelope](https://en.wikipedia.org/wiki/Envelope_%28waves%29). This is not necessarily true, but it works for most cases. The model works as follows:
@@ -111,6 +112,13 @@ In order to avoid [overfitting](https://en.wikipedia.org/wiki/Overfitting), a co
 ### Gradient Boosting
 Gradient Boosting was used exclusively to predict the tempo of a musical audio file, since for other purposes it performed worse than Neural Networks. Tempo prediction models were trained using [XGBoost](https://github.com/dmlc/xgboost), [CatBoost](https://github.com/catboost/catboost) and [LightGBM](https://github.com/microsoft/LightGBM) due to setbacks when trying to implement them into the final application. Finally, the tempo estimation now runs with the LightGBM model, which uses [decision trees](https://en.wikipedia.org/wiki/Decision_tree_learning) with a maximum depth of 10.
 
+## Performance
+
+ - Overall: **83.91%**
+ - Segmentation: **94.64%**
+ - Note identification: **96.32%**
+ - String identification: **90.37%**
+
 ## Limitations
 At present, there are several limitations to the application:
 
@@ -120,3 +128,4 @@ At present, there are several limitations to the application:
  - Musical **silences** are **not** built-in, so they might not appear in the final tab.
  - Even if recordings have been done with an 8-string guitar, for now only the 6 standard strings will appear in the output.
  - All music will be presented in **4/4** time signature.
+ - **Slides, vibratos, hammer-ons**, etc are **not** recommended to be included in the audio files.
