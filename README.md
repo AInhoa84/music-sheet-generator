@@ -36,7 +36,6 @@ The first step involves dividing the input file, which is essentially a long wav
 Even if by visualizing the waveform detecting note onsets seems intuitive, automatic detection is prone to false positives, given the low occurrence of note onsets compared to non-onsets. This is why an ensemble of several prediction models (1 rule-based custom model and 4 Neural Networks) was necessary.
 <br>
 ![Segmentation](segmented_wave.jpg)
-
 #### 1.1. Amplitude rule model
 This model was build based on the idea that a note change implies a sudden variation of the amplitude of the wave's [envelope](https://en.wikipedia.org/wiki/Envelope_%28waves%29). This is not necessarily true, but it works for most cases. The model works as follows:
 
@@ -55,7 +54,8 @@ The next step is to, given an individual note, identify its [chroma](https://en.
 
 ### 3. String identification
 Similarly, for each individual note, the string it is played on is estimated with a Neural Network which classifies audio input into 8 different classes corresponding to 8 different strings. There is no direct correspondence between note and string because the same note can be played in different strings.
-
+<br>
+![Note and string](note_string_id.jpg)
 ### 4. Fret assignment and calculation of duration
 Note duration is simply calculated as the difference between its onset and the next one. As for the [fret](https://en.wikipedia.org/wiki/Fret), there is a one-to-one correspondence between a string-note combination and the fret that corresponds to it. 
 
@@ -65,9 +65,13 @@ However, some string-note combinations are impossible, so this also serves as an
  - If it is not low, then the next most likely *string* is picked.
 
 The process is run iteratively until a possible note-string combination is found.
+<br>
+![Fret and duration](fret_duration.jpg)
 
 ### 5. Tempo estimation
 In case the number of beats per minute (bpm) of the musical piece is not provided by the user, [tempo](https://en.wikipedia.org/wiki/Tempo) is estimated by the program. This is done running a Gradient Boosting model over 8 consecutive notes at a time and then averaging the predictions. If the piece contains less than 8 notes, however, it is estimated by assigning the median of all durations as the duration of an [eighth note](https://en.wikipedia.org/wiki/Eighth_note) and calculating the tempo that corresponds to this.
+<br>
+![Tempo](tempo.jpg)
 
 ### 6. Homogenization
 In this step notes are rounded to the closest duration that corresponds to a certain value (quarter note, eighth note, etc). By now the result is a raw music sheet.
