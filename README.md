@@ -143,11 +143,15 @@ In order to avoid [overfitting](https://en.wikipedia.org/wiki/Overfitting), a co
 Gradient Boosting was used exclusively to predict the tempo of a musical audio file, since for other purposes it performed worse than Neural Networks. Tempo prediction models were trained using [XGBoost](https://github.com/dmlc/xgboost), [CatBoost](https://github.com/catboost/catboost) and [LightGBM](https://github.com/microsoft/LightGBM) due to setbacks when trying to implement them into the final application. Finally, the tempo estimation now runs with the LightGBM model, which uses [decision trees](https://en.wikipedia.org/wiki/Decision_tree_learning) with a maximum depth of 10.
 
 ## Performance
-
+Accuracy:
  - Overall: **83.91%**
  - Segmentation: **94.64%**
  - Note identification: **96.32%**
  - String identification: **90.37%**
+ 
+<br>
+
+Mean Absolute Error of Tempo detection: **8.61**
 
 ## Limitations
 At present, there are several limitations to the application:
