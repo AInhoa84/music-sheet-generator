@@ -93,7 +93,7 @@ In this step notes are rounded to the closest duration that corresponds to a cer
  
  - If a note is close (in terms of frequency) to the previous one but the frets are far from each other, then the string of the second note is changed so that the new fret is close to the previous.
  - If a note's fret is far from the previous and the confidence of the string prediction is low, then the next most likely string is selected.
-<br>
+
 ![Heuristics](heuristics.jpg)
 *Heuristics*
 
