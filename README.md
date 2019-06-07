@@ -34,7 +34,7 @@ The project relies on [Supervised Machine Learning](https://en.wikipedia.org/wik
 The first step involves dividing the input file, which is essentially a long waveform, into individual notes. The output of this step is an indication of where (or rather, when) each individual note starts.
 
 Even if by visualizing the waveform detecting note onsets seems intuitive, automatic detection is prone to false positives, given the low occurrence of note onsets compared to non-onsets. This is why an ensemble of several prediction models (1 rule-based custom model and 4 Neural Networks) was necessary.
-![A](Imgs/segmented_wave.jpg)
+![Segmentation](./Imgs/segmented_wave.jpg)
 
 #### 1.1. Amplitude rule model
 This model was build based on the idea that a note change implies a sudden variation of the amplitude of the wave's [envelope](https://en.wikipedia.org/wiki/Envelope_%28waves%29). This is not necessarily true, but it works for most cases. The model works as follows:
