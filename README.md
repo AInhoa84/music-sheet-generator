@@ -9,7 +9,14 @@ Automatic music transcription is an ongoing field of research. Despite the abili
 
 There are commercial applications that extract musical notes from audio, but they are prone to error and already expect the user to manually correct these mistakes. Additionally, there seem to be no applications that address this specifically for guitar and guitar notation.
 
-## How do I use it?
+## How do I install the project?
+ 1. Clone this repository.
+ 2. Create and activate a new virtual environment.
+ 3. Run `pip install -r requirements.txt`
+
+**NOTE**: You may need to install [FFmpeg](https://ffmpeg.org/download.html)
+
+## How do I use the application?
 
  1. Run "GUI.exe" located in "Final_app/dist/GUI".
  2. Click on *Browse* and locate your audio file.
