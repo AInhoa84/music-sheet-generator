@@ -30,6 +30,9 @@ There are commercial applications that extract musical notes from audio, but the
 ## How does it work?
 The project relies on [Supervised Machine Learning](https://en.wikipedia.org/wiki/Supervised_learning) techniques to solve this transcription problem, namely [Neural Networks](https://en.wikipedia.org/wiki/Artificial_neural_network) and [Gradient Boosting](https://en.wikipedia.org/wiki/Gradient_boosting). The processing of the file, or *pipeline*, follows several stages:
 
+![Stages](stages.jpg)
+*Guitar Tab Generator Pipeline*
+
 ### 1. Segmentation
 The first step involves dividing the input file, which is essentially a long waveform, into individual notes. The output of this step is an indication of where (or rather, when) each individual note starts.
 
@@ -47,7 +50,8 @@ These Neural Networks were trained to, given a short piece of a waveform, detect
  - Temporal broad window NN
  - Spectral narrow window NN
  - Spectral broad window NN
-<br>
+
+
 ![Segmentation](segmented_wave.jpg)
 *Segmentation*
 
@@ -89,9 +93,15 @@ In this step notes are rounded to the closest duration that corresponds to a cer
  
  - If a note is close (in terms of frequency) to the previous one but the frets are far from each other, then the string of the second note is changed so that the new fret is close to the previous.
  - If a note's fret is far from the previous and the confidence of the string prediction is low, then the next most likely string is selected.
+<br>
+![Heuristics](heuristics.jpg)
+*Heuristics*
 
 ### 8. Formatting
 The final stage consists in transforming the raw music sheet into a Guitar Pro tab. This is done making use of [PyGuitarPro](https://github.com/Perlence/PyGuitarPro).
+<br>
+![Formatting](final_sheet.jpg)
+*Final sheet*
 
 ## Data
 All of the data was extracted from DI recordings of an Ibanez RG8 guitar played by myself. In the future, the models could be re-trained with recordings from different guitars so as to improve generalization.
