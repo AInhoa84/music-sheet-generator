@@ -22,11 +22,13 @@ Automatic music transcription is an ongoing field of research. Despite the abili
 There are commercial applications that extract musical notes from audio, but they are prone to error and already expect the user to manually correct these mistakes. Additionally, there seem to be no applications that address this specifically for guitar and guitar notation.
 
 ## How do I install the project?
+Installation is quite tricky at the moment. To be safe you should (with conda at least):
  1. Clone this repository.
- 2. Create and activate a new virtual environment.
- 3. Run `pip install -r requirements.txt`
+ 2. Install pip version 18.1 `conda install pip==18.1`
+ 3. Create a new environment from the exported one provided `conda env create -f environment.yml -n your_env_name`
+ 3. Install requirements `pip install -r requirements.txt`
 
-**NOTE**: You may need to install [FFmpeg](https://ffmpeg.org/download.html)
+**NOTE**: You may need to install [FFmpeg](https://ffmpeg.org/download.html) and [tensorflow's gpu requirements](https://www.tensorflow.org/install/gpu)
 
 ## How do I use the application?
 
