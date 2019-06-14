@@ -26,7 +26,8 @@ Installation is quite tricky at the moment. To be safe you should (with conda at
  1. Clone this repository.
  2. Install pip version 18.1 `conda install pip==18.1`
  3. Create a new environment from the exported one provided `conda env create -f environment.yml -n your_env_name`
- 3. Install requirements `pip install -r requirements.txt`
+ 4. Install requirements `pip install -r requirements.txt`
+ 5. Re-train the LightGBM model by running the "Tempo/Tempo_lightgbm.ipynb".
 
 **NOTE**: You may need to install [FFmpeg](https://ffmpeg.org/download.html) and [tensorflow's gpu requirements](https://www.tensorflow.org/install/gpu)
 
