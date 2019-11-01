@@ -11,11 +11,13 @@ from keras.models import Model
 from keras.optimizers import Adam
 from keras.regularizers import l1, l2
 
+import lightgbm as lgb
+
 from Utilities_GUI import *
 from Segmenter_GUI import *
 
 class sheet_generator:
-    def __init__(self, note_model, string_model, segmentation_model=Segmenter(), bpm=None):
+    def __init__(self, note_model, string_model, tempo_model, segmentation_model=Segmenter(), bpm=None):
         """
         Create a sheet_generator object
         
@@ -30,6 +32,7 @@ class sheet_generator:
         self.note_model = load_NN(note_model, verbose=0)
         self.string_model = load_NN(string_model, verbose=0)
         self.segmentation_model = segmentation_model
+        self.tempo_model = lgb.Booster(model_file=tempo_model)
         
         # Set bpm
         self.bpm = bpm
@@ -138,7 +141,17 @@ class sheet_generator:
             
         """
         extracted_notes = np.array(extracted_notes)
-        return round_to_base(1/(2 * np.median(extracted_notes[:,2].astype(float))) * 60, 10)
+        
+        if extracted_notes.shape[0] >= 8:
+            preds = []
+            for k in range(extracted_notes.shape[0] - 7):
+                data = pd.DataFrame({"d{}".format(i): [float(extracted_notes[i+k,2])] for i in range(8)})
+                preds.append(self.tempo_model.predict(data, num_iteration=self.tempo_model.best_iteration))
+            return int(np.mean(preds))
+        
+        else:
+            # If there are not enough notes use the old estimation
+            return round_to_base(1/(2 * np.median(extracted_notes[:,2].astype(float))) * 60, 10)
     
     def raw_sheet(self, extracted_notes, apply_heuristics):
         """
